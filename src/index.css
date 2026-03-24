@@ -1,0 +1,386 @@
+/* ===================================================
+   JOURNEY TO MARS — 2025 Cosmic UI Design System
+   =================================================== */
+
+/* --- CSS Custom Properties --- */
+:root {
+  /* Core Palette */
+  --deep-black: #000000;
+  --stark-white: #FFFFFF;
+  --mars-rust: #B2533E;
+  --neon-cyan: #00F3FF;
+
+  /* Extended Palette */
+  --mars-rust-dim: rgba(178, 83, 62, 0.5);
+  --neon-cyan-dim: rgba(0, 243, 255, 0.3);
+  --neon-cyan-glow: rgba(0, 243, 255, 0.15);
+  --panel-bg: rgba(255, 255, 255, 0.05);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(0, 243, 255, 0.03);
+  --card-border: rgba(0, 243, 255, 0.2);
+
+  /* Typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+  --space-2xl: 8rem;
+
+  /* Font Sizes — fluid with clamp() */
+  --text-xs: clamp(0.65rem, 0.6rem + 0.25vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.7rem + 0.3vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.8rem + 0.4vw, 1rem);
+  --text-lg: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --text-2xl: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --text-3xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+  --text-hero: clamp(3rem, 2rem + 5vw, 8rem);
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto; /* GSAP handles scrolling */
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-display);
+  background: var(--deep-black);
+  color: var(--stark-white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+/* --- Glassmorphism Utilities --- */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+}
+
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--neon-cyan);
+}
+
+.glass-nav {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* --- HUD Corner Decorations --- */
+.hud-corners {
+  position: relative;
+}
+
+.hud-corners::before,
+.hud-corners::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--neon-cyan);
+  border-style: solid;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.hud-corners::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.hud-corners::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+/* --- Typography Utilities --- */
+.text-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.text-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.text-section-subtitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
+}
+
+.text-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* --- Accent Color Utilities --- */
+.text-cyan {
+  color: var(--neon-cyan);
+}
+
+.text-rust {
+  color: var(--mars-rust);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 20px var(--neon-cyan-dim), 0 0 40px var(--neon-cyan-glow);
+}
+
+.glow-rust {
+  text-shadow: 0 0 20px var(--mars-rust-dim);
+}
+
+/* --- Layout Utilities --- */
+.fixed-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+
+.scroll-overlay {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.scroll-overlay > * {
+  pointer-events: auto;
+}
+
+.section {
+  min-height: 200vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-lg);
+  position: relative;
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan-dim);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+/* --- Loader Styles --- */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--deep-black);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.loader-terminal {
+  width: min(600px, 90vw);
+  padding: var(--space-lg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  position: relative;
+}
+
+.loader-terminal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.loader-terminal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-cyan-dim);
+}
+
+.loader-terminal-dot:first-child {
+  background: var(--mars-rust);
+}
+
+.loader-terminal-dot:nth-child(2) {
+  background: rgba(255, 200, 50, 0.6);
+}
+
+.loader-terminal-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: auto;
+}
+
+.loader-lines {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  color: var(--neon-cyan);
+}
+
+.loader-lines .line {
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.loader-lines .line.dimmed {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.loader-lines .line.success {
+  color: #4ade80;
+}
+
+.loader-lines .line.warning {
+  color: var(--mars-rust);
+}
+
+.loader-progress-container {
+  margin-top: var(--space-lg);
+  width: 100%;
+}
+
+.loader-progress-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  justify-content: space-between;
+}
+
+.loader-progress-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.loader-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--mars-rust));
+  border-radius: 1px;
+}
+
+.loader-mission-title {
+  margin-top: var(--space-xl);
+  text-align: center;
+  opacity: 0;
+}
+
+.loader-mission-title h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--stark-white) 0%, var(--neon-cyan) 50%, var(--mars-rust) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.loader-mission-title p {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: var(--space-sm);
+  letter-spacing: 0.3em;
+}
+
+/* --- Scanline overlay effect for loader --- */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.03;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.5) 2px,
+    rgba(255, 255, 255, 0.5) 4px
+  );
+}
