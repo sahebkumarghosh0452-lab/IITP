@@ -20,10 +20,11 @@ const createStore = (initialState) => {
 const store = createStore({
   scrollProgress: 0,        // 0–1 overall scroll progress
   activeSection: 0,          // 0–4 section index
-  cameraPosition: [0, 0, 20], // [x, y, z]
+  cameraPosition: [2, 0, 5], // [x, y, z] — close to Earth at launch
   cameraLookAt: [0, 0, 0],
   bloomIntensity: 0,
   cameraShake: 0,
+  rocketProgress: 0,         // 0–1 rocket launch progress
   loadingComplete: false,
   selectedWaypoint: null,
 });

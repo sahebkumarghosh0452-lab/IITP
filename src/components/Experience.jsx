@@ -17,18 +17,19 @@ gsap.registerPlugin(ScrollTrigger);
 
 /*
   Camera spline waypoints (x, y, z) for each narrative phase:
-  0: Launch — looking at Earth
-  1: Cruise — pulling away into void
+  0: Launch — ground-level on Earth, watching rocket lift off
+  1: Cruise — following rocket into space, then void
   2: EDL — rushing toward Mars
   3: Surface — landed, ground-level
   4: Habitats — slightly pulled back overhead
 */
 const CAMERA_KEYFRAMES = [
-  { pos: [0, 1, 20], look: [0, 0, 0] },       // Launch: facing Earth
-  { pos: [5, 2, -10], look: [0, 0, -30] },     // Cruise: moving through void
-  { pos: [0, 3, -60], look: [0, 0, -80] },     // EDL: approaching Mars
-  { pos: [3, 0, -75], look: [0, -2, -80] },    // Surface: ground-level
-  { pos: [0, 5, -72], look: [0, -1, -80] },    // Habitats: slight overview
+  { pos: [2, 0, 5], look: [0, 0, 0] },          // Launch start: close to Earth, rocket visible at surface
+  { pos: [3, 20, 8], look: [0, 40, 0] },         // Launch mid: rising with rocket through atmosphere
+  { pos: [5, 2, -10], look: [0, 0, -30] },       // Cruise: pulling away into the void
+  { pos: [0, 3, -60], look: [0, 0, -80] },       // EDL: approaching Mars
+  { pos: [3, 0, -75], look: [0, -2, -80] },      // Surface: ground-level on Mars
+  { pos: [0, 8, -72], look: [0, 3, -80] },       // Habitats: overhead view, rover visible above Mars
 ];
 
 export default function Experience() {
@@ -65,36 +66,77 @@ export default function Experience() {
         });
 
         // ============================================
-        // CAMERA SPLINE FLY-THROUGH (Animation 2)
+        // ROCKET LAUNCH ANIMATION (Section 0: Launch)
         // ============================================
-        sections.forEach((section, i) => {
-          if (i >= CAMERA_KEYFRAMES.length) return;
-          const kf = CAMERA_KEYFRAMES[i];
-
+        const launchSection = document.querySelector('#launch');
+        if (launchSection) {
           ScrollTrigger.create({
-            trigger: section,
-            start: 'top center',
-            end: 'bottom center',
+            trigger: launchSection,
+            start: 'top top',
+            end: 'bottom top',
             scrub: 1,
             onUpdate: (self) => {
-              const nextIdx = Math.min(i + 1, CAMERA_KEYFRAMES.length - 1);
-              const nextKf = CAMERA_KEYFRAMES[nextIdx];
-              const p = self.progress;
-
-              // Lerp between current and next keyframe's positions
-              const pos = kf.pos.map(
-                (v, j) => v + (nextKf.pos[j] - v) * p
-              );
-              const look = kf.look.map(
-                (v, j) => v + (nextKf.look[j] - v) * p
-              );
-
-              store.setState({
-                cameraPosition: pos,
-                cameraLookAt: look,
-              });
+              store.setState({ rocketProgress: self.progress });
+            },
+            onLeave: () => {
+              store.setState({ rocketProgress: 1 });
+            },
+            onLeaveBack: () => {
+              store.setState({ rocketProgress: 0 });
             },
           });
+        }
+
+        // ============================================
+        // CAMERA SPLINE FLY-THROUGH (Animation 2)
+        // Now with 6 keyframes (2 for launch phase)
+        // ============================================
+        // Map sections to keyframe pairs:
+        // section 0 (Launch) -> keyframes 0→1 (ground to atmosphere)
+        // section 1 (Cruise) -> keyframes 2 (void)
+        // section 2 (EDL) -> keyframes 3 (approach Mars)
+        // section 3 (Surface) -> keyframes 4 (ground)
+        // section 4 (Habitats) -> keyframes 5 (overhead)
+        const sectionToKeyframe = [0, 2, 3, 4, 5];
+
+        sections.forEach((section, i) => {
+          const kfIdx = sectionToKeyframe[i];
+          if (kfIdx === undefined || kfIdx >= CAMERA_KEYFRAMES.length) return;
+          const kf = CAMERA_KEYFRAMES[kfIdx];
+
+          // For launch section, interpolate across 2 keyframes (0→1)
+          if (i === 0) {
+            ScrollTrigger.create({
+              trigger: section,
+              start: 'top center',
+              end: 'bottom center',
+              scrub: 1,
+              onUpdate: (self) => {
+                const p = self.progress;
+                const kf0 = CAMERA_KEYFRAMES[0];
+                const kf1 = CAMERA_KEYFRAMES[1];
+                const pos = kf0.pos.map((v, j) => v + (kf1.pos[j] - v) * p);
+                const look = kf0.look.map((v, j) => v + (kf1.look[j] - v) * p);
+                store.setState({ cameraPosition: pos, cameraLookAt: look });
+              },
+            });
+          } else {
+            const nextIdx = Math.min(kfIdx + 1, CAMERA_KEYFRAMES.length - 1);
+            const nextKf = CAMERA_KEYFRAMES[nextIdx];
+
+            ScrollTrigger.create({
+              trigger: section,
+              start: 'top center',
+              end: 'bottom center',
+              scrub: 1,
+              onUpdate: (self) => {
+                const p = self.progress;
+                const pos = kf.pos.map((v, j) => v + (nextKf.pos[j] - v) * p);
+                const look = kf.look.map((v, j) => v + (nextKf.look[j] - v) * p);
+                store.setState({ cameraPosition: pos, cameraLookAt: look });
+              },
+            });
+          }
         });
 
         // ============================================

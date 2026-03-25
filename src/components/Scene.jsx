@@ -6,6 +6,7 @@ import Stars from './three/Stars';
 import Earth from './three/Earth';
 import Spacecraft from './three/Spacecraft';
 import Mars from './three/Mars';
+import Rocket from './three/Rocket';
 import Rover from './three/Rover';
 import MartianTerrain from './three/MartianTerrain';
 import store from '../store';
@@ -87,24 +88,35 @@ function SceneContent() {
       <Stars />
 
       {/* Phase-dependent objects */}
+
+      {/* Earth + Rocket launch sequence */}
       <group position={[0, 0, 0]}>
-        <Earth visible={activeSection <= 0} />
+        <Earth visible={activeSection <= 1} />
       </group>
 
+      {/* Rocket — launches from Earth surface, driven by rocketProgress */}
+      <group position={[0, 0, 0]}>
+        <Rocket visible={activeSection <= 1} />
+      </group>
+
+      {/* Spacecraft during cruise */}
       <group position={[0, 0, -30]}>
         <Spacecraft visible={activeSection === 1} />
       </group>
 
+      {/* Mars globe */}
       <group position={[0, 0, -80]}>
         <Mars visible={activeSection >= 2} />
       </group>
 
-      <group position={[0, -2.5, -80]}>
-        <MartianTerrain visible={activeSection >= 3} />
+      {/* Rover placed ABOVE Mars globe */}
+      <group position={[0, 5, -80]}>
+        <Rover visible={activeSection >= 3} />
       </group>
 
-      <group position={[2, -1.8, -78]}>
-        <Rover visible={activeSection >= 3} />
+      {/* Martian terrain */}
+      <group position={[0, -2.5, -80]}>
+        <MartianTerrain visible={activeSection >= 3} />
       </group>
 
       {/* Post-processing */}
@@ -117,7 +129,7 @@ export default function Scene() {
   return (
     <div className="fixed-canvas">
       <Canvas
-        camera={{ position: [0, 0, 20], fov: 60, near: 0.1, far: 1000 }}
+        camera={{ position: [2, 0, 5], fov: 60, near: 0.1, far: 1000 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: false }}
         style={{ background: '#000000' }}
